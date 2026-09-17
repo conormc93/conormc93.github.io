@@ -39,7 +39,7 @@ params:
       Software engineer building platform integrations, running production
       releases, closing security findings — and building the tooling that makes
       AI-assisted engineering dependable.
-    imageUrl: /images/profile.jpg
+    imageUrl: /images/profile.png
     imageTitle: Conor McGrath
     imageWidth: 120
     imageHeight: 120
@@ -106,3 +106,10 @@ markup:
     guessSyntax: true
     lineNos: false
     style: monokai
+
+# favicons generated from the profile photo
+assets:
+  favicon: /favicon.png
+  favicon16x16: /favicon-16x16.png
+  favicon32x32: /favicon-32x32.png
+  apple_touch_icon: /apple-touch-icon.png
