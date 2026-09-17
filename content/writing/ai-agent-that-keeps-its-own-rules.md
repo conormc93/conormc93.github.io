@@ -94,7 +94,9 @@ $ grep -r "/usr/bin/bash: line 12" "$VAULT"
 Obsidian Vault/20-Notes/2026-09-16-git-bash-is-the-shell.md
 ```
 
-`grep` is a shell built-in and does not go through that conversion. Error
+The `grep` that ships with Git for Windows is an MSYS program, and MSYS only
+rewrites arguments when it launches a native Windows executable such as
+`rg.exe`, so `grep` receives the pattern untouched. Error
 messages are full of slashes, and error messages are exactly what I search the
 vault for, so the retrieval commands in the vault's own schema now use `grep`,
 with this reason written beside them.
