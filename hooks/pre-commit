@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+# Blocks a commit that would put employer detail in this repo, in two tiers.
+#
+# This repo lives on a personal account. Two different risks, handled
+# differently because they are not the same thing:
+#
+#   .leak-internal   Hostnames, ticket keys, internal orgs and systems,
+#                    security tooling, work account identifiers.
+#                    BLOCKED EVERYWHERE. No exceptions, ever.
+#
+#   .leak-employer   Employer and team names.
+#                    Blocked everywhere EXCEPT the paths in .leak-exempt,
+#                    because a CV or professional profile must name employers.
+#
+#   .leak-exempt     Path prefixes exempt from .leak-employer only.
+#
+# All three are gitignored: the word lists are themselves employer-specific.
+#
+# Fail-closed: no .leak-internal means no commit. A guard that silently passes
+# is worse than none, because you stop checking by hand.
+#
+# Install per machine:  git config core.hooksPath hooks   (or hooks/install.sh)
+
+set -u
+
+ROOT="$(git rev-parse --show-toplevel)"
+INTERNAL="$ROOT/.leak-internal"
+EMPLOYER="$ROOT/.leak-employer"
+EXEMPT="$ROOT/.leak-exempt"
+
+if [ ! -f "$INTERNAL" ]; then
+  cat >&2 <<MSG
+pre-commit: BLOCKED -- no .leak-internal file.
+
+This repo must not contain internal employer detail, and the guard cannot run
+without the list of words to look for.
+
+Create it (it is gitignored), one regex per line, for example:
+  printf '%s\n' internal.host.example 'TICKET-[0-9]+' InternalOrg > .leak-internal
+
+See UPDATING.md. Then commit again.
+MSG
+  exit 1
+fi
+
+load() { [ -f "$1" ] && grep -vE '^\s*(#|$)' "$1" || true; }
+join() { local IFS='|'; shift 0; printf '%s' "$*"; }
+
+mapfile -t int_pats < <(load "$INTERNAL")
+mapfile -t emp_pats < <(load "$EMPLOYER")
+mapfile -t exempt   < <(load "$EXEMPT")
+
+[ "${#int_pats[@]}" -gt 0 ] || { echo "pre-commit: BLOCKED -- .leak-internal has no usable patterns." >&2; exit 1; }
+
+int_re=$(join "${int_pats[@]}")
+emp_re=""
+[ "${#emp_pats[@]}" -gt 0 ] && emp_re=$(join "${emp_pats[@]}")
+
+fail=0
+report() { echo "  $2" | head -20 | sed 's/^/    /' >&2; }
+
+# --- tier 1: internal detail, every staged file, no exemptions -------------
+int_hits=$(git diff --cached --unified=0 \
+            | awk '/^\+/ && !/^\+\+\+/' \
+            | grep -inE "$int_re" || true)
+int_paths=$(git diff --cached --name-only | grep -inE "$int_re" || true)
+
+if [ -n "$int_hits" ] || [ -n "$int_paths" ]; then
+  echo "pre-commit: BLOCKED -- INTERNAL employer detail in staged changes." >&2
+  echo "  (hostnames, ticket keys, internal systems -- never allowed here)" >&2
+  [ -n "$int_hits" ]  && { echo "  In added lines:" >&2;  report x "$int_hits"; }
+  [ -n "$int_paths" ] && { echo "  In file paths:" >&2;   report x "$int_paths"; }
+  fail=1
+fi
+
+# --- tier 2: employer names, excluding exempt paths -----------------------
+if [ -n "$emp_re" ]; then
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    skip=0
+    for e in "${exempt[@]}"; do
+      case "$f" in "$e"*) skip=1; break ;; esac
+    done
+    [ "$skip" -eq 1 ] && continue
+    hits=$(git diff --cached --unified=0 -- "$f" \
+            | awk '/^\+/ && !/^\+\+\+/' \
+            | grep -inE "$emp_re" || true)
+    if [ -n "$hits" ]; then
+      [ "$fail" -eq 0 ] && {
+        echo "pre-commit: BLOCKED -- employer or team name outside an exempt path." >&2
+        echo "  Exempt paths: ${exempt[*]:-none}" >&2
+      }
+      echo "  $f:" >&2; report x "$hits"
+      fail=1
+    fi
+  done < <(git diff --cached --name-only)
+fi
+
+if [ "$fail" -eq 1 ]; then
+  echo >&2
+  echo "Move it to the vault or ~/.claude/settings.json, genericise it, or put a" >&2
+  echo "profile document under an exempt path. Override once: git commit --no-verify" >&2
+  exit 1
+fi
+exit 0

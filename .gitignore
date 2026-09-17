@@ -1,0 +1,9 @@
+# leak-guard lists are employer-specific; never commit them
+.leak-internal
+.leak-employer
+.leak-exempt
+
+# hugo output
+public/
+resources/_gen/
+.hugo_build.lock

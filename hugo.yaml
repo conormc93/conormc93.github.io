@@ -1,0 +1,107 @@
+baseURL: https://conormc93.github.io/
+languageCode: en-gb
+title: Conor McGrath
+theme: PaperMod
+
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: false
+
+minify:
+  disableXML: true
+  minifyOutput: true
+
+params:
+  env: production
+  title: Conor McGrath
+  description: Software engineer — platform integration, release engineering, application security, and the tooling that makes AI-assisted work reliable.
+  author: Conor McGrath
+  defaultTheme: auto
+  disableThemeToggle: false
+  ShowReadingTime: true
+  ShowShareButtons: false
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowWordCount: false
+  ShowRssButtonInSectionTermList: true
+  UseHugoToc: true
+  disableSpecial1stPost: true
+  hidemeta: false
+  hideSummary: false
+  showtoc: true
+  tocopen: false
+
+  profileMode:
+    enabled: true
+    title: Conor McGrath
+    subtitle: >
+      Software engineer building platform integrations, running production
+      releases, closing security findings — and building the tooling that makes
+      AI-assisted engineering dependable.
+    imageUrl: ""
+    imageWidth: 120
+    imageHeight: 120
+    buttons:
+      - name: Projects
+        url: /projects/
+      - name: Writing
+        url: /writing/
+      - name: CV
+        url: /cv/
+
+  socialIcons:
+    - name: github
+      url: https://github.com/conormc93
+    - name: email
+      url: mailto:conormc93@pm.me
+
+  cover:
+    hidden: true
+    hiddenInList: true
+    hiddenInSingle: true
+
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    keys: ["title", "permalink", "summary", "content"]
+
+menu:
+  main:
+    - identifier: projects
+      name: Projects
+      url: /projects/
+      weight: 10
+    - identifier: writing
+      name: Writing
+      url: /writing/
+      weight: 20
+    - identifier: cv
+      name: CV
+      url: /cv/
+      weight: 30
+    - identifier: search
+      name: Search
+      url: /search/
+      weight: 40
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: false
+  highlight:
+    noClasses: false
+    codeFences: true
+    guessSyntax: true
+    lineNos: false
+    style: monokai
