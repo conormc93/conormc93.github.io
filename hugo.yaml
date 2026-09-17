@@ -39,7 +39,8 @@ params:
       Software engineer building platform integrations, running production
       releases, closing security findings — and building the tooling that makes
       AI-assisted engineering dependable.
-    imageUrl: ""
+    imageUrl: /images/profile.jpg
+    imageTitle: Conor McGrath
     imageWidth: 120
     imageHeight: 120
     buttons:

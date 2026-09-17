@@ -7,10 +7,14 @@ showtoc: false
 
 **Conor McGrath** · Software Engineer · Spain · [conormc93@pm.me](mailto:conormc93@pm.me) · [github.com/conormc93](https://github.com/conormc93)
 
-Software engineer working on platform integration, production release
-engineering and application security, with a growing focus on making
-AI-assisted engineering dependable: encoded standards, reusable tooling, and
-checks that enforce rules rather than trusting memory.
+Software engineer across two disciplines that are usually kept apart:
+**development** (Java and Spring Boot services, ReactJS frontends, AWS
+integration, production release engineering) and **application security**
+(SAST/DAST rollout, penetration-test remediation, NIST SSDF adoption, secure
+CI/CD). Most recently, cross-service platform integration that has to be both
+secure and shipped, with a growing focus on making AI-assisted engineering
+dependable: encoded standards, reusable tooling, and checks that enforce rules
+rather than trusting memory.
 
 ## Experience
 
